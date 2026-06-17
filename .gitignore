@@ -1,4 +1,4 @@
-# Local aptly state and pipeline work dirs (never committed; rebuilt each run)
+# Local aptly state and pipeline work dirs
 /.aptly/
 /publish/
 /work/
@@ -9,5 +9,5 @@
 /SHA256SUMS
 /SHA256SUMS.asc
 
-# Local-only dev overrides (e.g. .sources pointing at the Pages URL)
+# Local-only dev overrides
 *.local
