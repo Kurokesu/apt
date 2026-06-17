@@ -1,0 +1,35 @@
+# Kurokesu APT archive - declarative contents (the archive "state").
+#
+# This file is the single source of truth for what the archive serves. The
+# publish pipeline is a stateless full rebuild from this manifest each run, so
+# git history of this file is the archive's audit log and rollback mechanism.
+#
+# Asset filenames are DERIVED, never hand-typed:
+#   <source>_<version><suite_suffix>_<suite>_<arch>.tar.gz   (on release <tag>)
+#
+# Retention / packaging rebuilds (the forks publish with `gh release upload
+# --clobber`, so a rebuild replaces a tag's assets):
+#   - One block per distinct source TAG (retain-all by tag).
+#   - On a packaging rebuild, EDIT the block's `version` in place (-1 -> -2).
+#     NEVER append a second block for the same tag - the old revision's assets
+#     no longer exist and would 404 the build.
+#   - Rollback granularity is therefore per-release, not per packaging revision.
+
+defaults:
+  architectures: [arm64]
+  component: main
+  origin: Kurokesu
+  suites: [bookworm, trixie]
+  suite_suffix:          # appended to the Debian version per suite
+    bookworm: "+bpo12+1"
+    trixie: ""
+
+sources:
+  libcamera:   { repo: Kurokesu/libcamera }
+  rpicam-apps: { repo: Kurokesu/rpicam-apps }
+
+# One block per distinct source tag. `suites` may override defaults.suites
+# (e.g. a future trixie-only release).
+releases:
+  - { source: libcamera,   tag: v0.7.1+rpt20260429+krks1, version: "0.7.1+rpt20260429+krks1-2", suites: [bookworm, trixie] }
+  - { source: rpicam-apps, tag: v1.12.0+krks1,            version: "1.12.0+krks1-1",            suites: [bookworm, trixie] }
