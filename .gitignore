@@ -1,0 +1,13 @@
+# Local aptly state and pipeline work dirs (never committed; rebuilt each run)
+/.aptly/
+/publish/
+/work/
+
+# Fetched/extracted artifacts and checksums
+*.deb
+*.tar.gz
+/SHA256SUMS
+/SHA256SUMS.asc
+
+# Local-only dev overrides (e.g. .sources pointing at the Pages URL)
+*.local
