@@ -20,7 +20,9 @@ defaults:
   component: main
   origin: Kurokesu
   suites: [bookworm, trixie]
-  suite_suffix:          # appended to the Debian version per suite
+  # Asset-filename suffix (the .deb itself uses ~bpo12+1). GitHub rewrites ~ in
+  # filenames, so assets use +. Do NOT change to ~ or ingest 404s.
+  suite_suffix:
     bookworm: "+bpo12+1"
     trixie: ""
 
