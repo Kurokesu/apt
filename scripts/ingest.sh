@@ -80,11 +80,19 @@ while IFS=$'\t' read -r source repo tag version suite arch component origin tarb
   dest="$STAGING_DIR/$suite"
   mkdir -p "$dest"
   for deb in "${debs[@]}"; do
+    base=$(basename "$deb")
+    # Safety net: source bundling drops -dbgsym, so one here is a source-side
+    # regression. Skip it and warn rather than ship debug symbols to customers.
+    case "$(dpkg-deb -f "$deb" Package)" in
+      *-dbgsym)
+        warn "$base: debug-symbol package in release, skipping (fix the source repo's release bundling)"
+        continue ;;
+    esac
     dv=$(dpkg-deb -f "$deb" Version)
     # trixie matches exactly, a backport build appends ~bpo... to the same base
     case "$dv" in
       "$version"|"$version"~*) : ;;
-      *) die "version mismatch in $(basename "$deb"): deb '$dv' vs manifest '$version'" ;;
+      *) die "version mismatch in $base: deb '$dv' vs manifest '$version'" ;;
     esac
     cp -f "$deb" "$dest/"
   done
