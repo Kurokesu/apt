@@ -1,0 +1,65 @@
+# Build and deploy the Kurokesu APT archive to GitHub Pages.
+#
+# ingest.sh fetches and verifies the promoted release assets, publish.sh builds
+# the signed per-suite index, and the resulting tree (dists/ + pool/) is deployed
+# as the Pages site. Every run is a full rebuild from manifest.yml, so to roll
+# back a bad release just `git revert` the manifest change and re-run.
+#
+# Manual only: promote the source releases off pre-release first, then run this
+# from the Actions tab. ingest skips pre-release tags, so a run before promotion
+# ingests nothing and fails closed rather than publishing a half-empty archive.
+name: Publish APT archive
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+# One writer for the single signed index. cancel-in-progress: false so a queued
+# run never aborts an in-flight deploy mid-swap.
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+        with:
+          persist-credentials: false
+
+      # gpgv, gh, dpkg-deb, sha256sum and tar are preinstalled on the runner.
+      - name: Install aptly and PyYAML
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y --no-install-recommends aptly python3-yaml
+
+      # gh reads released assets from the (public) source repos via GITHUB_TOKEN.
+      # If a source repo ever goes private, swap this for a PAT secret with
+      # read access to its releases.
+      - name: Ingest promoted release assets
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: ./scripts/ingest.sh
+
+      - name: Build signed index
+        env:
+          ARCHIVE_GPG_SIGNING_KEY: ${{ secrets.ARCHIVE_GPG_SIGNING_KEY }}
+        run: ./scripts/publish.sh
+
+      - uses: actions/configure-pages@45bfe0192ca1faeb007ade9deae92b16b8254a0d # v6.0.0
+
+      - uses: actions/upload-pages-artifact@fc324d3547104276b827a68afc52ff2a11cc49c9 # v5.0.0
+        with:
+          path: publish
+
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@cd2ce8fcbc39b97be8ca5fce6e763baed58fa128 # v5.0.0
