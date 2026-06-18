@@ -7,16 +7,14 @@
 # also smoke-tests the Pages path end to end.
 #
 # When the publish pipeline lands, replace this with the real workflow that uploads
-# the generated publish/ tree (pool/ + dists/) instead of site/. Keep .nojekyll and
-# the CNAME file in whatever is uploaded so the custom domain stays attached.
+# the generated publish/ tree (pool/ + dists/) instead of site/.
+#
+# Manual-only during development. The placeholder is already deployed and Pages keeps
+# serving the last deployment, so dev pushes must not redeploy. Run by hand from the
+# Actions tab if the placeholder ever needs refreshing.
 name: Deploy Pages (placeholder)
 
 on:
-  push:
-    branches: [main]
-    paths:
-      - "site/**"
-      - ".github/workflows/pages.yml"
   workflow_dispatch:
 
 permissions:
