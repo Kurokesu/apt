@@ -156,7 +156,13 @@ def main():
     elif args.command == "suites":
         print(" ".join(dict.fromkeys(r["suite"] for r in rows)))
     elif args.command == "architectures":
-        arch_rows = rows if args.suite is None else [r for r in rows if r["suite"] == args.suite]
+        if args.suite is None:
+            arch_rows = rows
+        else:
+            known = list(dict.fromkeys(r["suite"] for r in rows))
+            if args.suite not in known:
+                die(f"--suite '{args.suite}' matches no release suites (known: {' '.join(known)})")
+            arch_rows = [r for r in rows if r["suite"] == args.suite]
         print(" ".join(dict.fromkeys(r["arch"] for r in arch_rows)))
     elif args.command == "origin":
         print(defaults["origin"])
