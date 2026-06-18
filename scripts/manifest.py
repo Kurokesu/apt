@@ -9,7 +9,8 @@ Subcommands:
   plan          TSV of ingest/publish units, one row per (release, suite, arch):
                 source  repo  tag  version  suite  arch  component  origin  tarball
   suites        space-separated unique suites referenced by releases
-  architectures space-separated architectures (defaults.architectures)
+  architectures space-separated architectures, union across units
+                (restrict to one suite with --suite)
   origin        defaults.origin
   component     defaults.component
   validate      load + sanity-check the manifest (exit non-zero on error)
@@ -42,6 +43,19 @@ def require_str_list(value, where):
     return value
 
 
+def resolve_list(rel, source_cfg, defaults, key, idx):
+    """Resolve a list-valued field with precedence: release > source > defaults.
+
+    `source_cfg` and `defaults` values are already validated in load(). A release
+    override is validated here on first use.
+    """
+    if key in rel:
+        return require_str_list(rel[key], f"releases[{idx}].{key}")
+    if key in source_cfg:
+        return source_cfg[key]
+    return defaults[key]
+
+
 def load(path):
     try:
         with open(path, "r", encoding="utf-8") as fh:
@@ -64,8 +78,22 @@ def load(path):
     require_str_list(defaults["suites"], "defaults.suites")
     if not isinstance(sources, dict) or not sources:
         die("sources must be a non-empty mapping")
+    for name, cfg in sources.items():
+        if not isinstance(cfg, dict):
+            die(f"sources.{name} must be a mapping")
+        repo = cfg.get("repo")
+        if not repo or not isinstance(repo, str):
+            die(f"sources.{name}.repo is required and must be a string")
+        if "architectures" in cfg:
+            require_str_list(cfg["architectures"], f"sources.{name}.architectures")
+        if "suites" in cfg:
+            require_str_list(cfg["suites"], f"sources.{name}.suites")
+
     if not isinstance(releases, list) or not releases:
         die("releases must be a non-empty list")
+    for idx, rel in enumerate(releases):
+        if not isinstance(rel, dict):
+            die(f"releases[{idx}] must be a mapping")
 
     return defaults, sources, releases
 
@@ -83,22 +111,15 @@ def units(defaults, sources, releases):
         source = rel["source"]
         if source not in sources:
             die(f"releases[{idx}].source '{source}' is not declared under sources")
-        repo = sources[source].get("repo")
-        if not repo:
-            die(f"sources.{source}.repo is required")
+        source_cfg = sources[source]
+        repo = source_cfg["repo"]
         tag = rel["tag"]
-        if tag in seen:
-            die(f"duplicate release tag '{tag}' - edit the existing block in place, do not append")
-        seen.add(tag)
+        if (source, tag) in seen:
+            die(f"duplicate release {source} '{tag}' - edit the existing block in place, do not append")
+        seen.add((source, tag))
         version = rel["version"]
-        if "suites" in rel:
-            suites = require_str_list(rel["suites"], f"releases[{idx}].suites")
-        else:
-            suites = defaults["suites"]
-        if "architectures" in rel:
-            arches = require_str_list(rel["architectures"], f"releases[{idx}].architectures")
-        else:
-            arches = defaults["architectures"]
+        suites = resolve_list(rel, source_cfg, defaults, "suites", idx)
+        arches = resolve_list(rel, source_cfg, defaults, "architectures", idx)
         for suite in suites:
             suffix = suffixes.get(suite, "")
             for arch in arches:
@@ -120,6 +141,7 @@ def main():
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument("command", choices=["plan", "suites", "architectures", "origin", "component", "validate"])
     ap.add_argument("--manifest", default=DEFAULT_MANIFEST)
+    ap.add_argument("--suite", help="restrict 'architectures' output to one suite")
     args = ap.parse_args()
 
     defaults, sources, releases = load(args.manifest)
@@ -134,7 +156,8 @@ def main():
     elif args.command == "suites":
         print(" ".join(dict.fromkeys(r["suite"] for r in rows)))
     elif args.command == "architectures":
-        print(" ".join(defaults["architectures"]))
+        arch_rows = rows if args.suite is None else [r for r in rows if r["suite"] == args.suite]
+        print(" ".join(dict.fromkeys(r["arch"] for r in arch_rows)))
     elif args.command == "origin":
         print(defaults["origin"])
     elif args.command == "component":

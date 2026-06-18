@@ -7,7 +7,7 @@
 # Asset filenames are DERIVED, never hand-typed:
 #   <source>_<version><suite_suffix>_<suite>_<arch>.tar.gz   (on release <tag>)
 #
-# Retention / packaging rebuilds (the forks publish with `gh release upload
+# Retention / packaging rebuilds (the source repos publish with `gh release upload
 # --clobber`, so a rebuild replaces a tag's assets):
 #   - One block per distinct source TAG (retain-all by tag).
 #   - On a packaging rebuild, EDIT the block's `version` in place (-1 -> -2).
@@ -24,12 +24,16 @@ defaults:
     bookworm: "+bpo12+1"
     trixie: ""
 
+# `repo` is required per source. `architectures` and `suites` are optional and
+# describe that repo's build matrix (e.g. a source that never ships armhf, or only
+# builds trixie). Resolution precedence for both is: release block > source > defaults.
 sources:
   libcamera:   { repo: Kurokesu/libcamera }
   rpicam-apps: { repo: Kurokesu/rpicam-apps }
 
-# One block per distinct source tag. `suites` may override defaults.suites
-# (e.g. a future trixie-only release).
+# One block per distinct source tag. `suites` / `architectures` may override the
+# source/defaults for that single tag - use this for a cutover, e.g. freeze older
+# tags to [arm64] once a source starts shipping armhf from a later release.
 releases:
   - { source: libcamera,   tag: v0.7.1+rpt20260429+krks1, version: "0.7.1+rpt20260429+krks1-2", suites: [bookworm, trixie] }
   - { source: rpicam-apps, tag: v1.12.0+krks1,            version: "1.12.0+krks1-1",            suites: [bookworm, trixie] }
