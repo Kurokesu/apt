@@ -100,7 +100,6 @@ def load(path):
 
 def units(defaults, sources, releases):
     """Yield one dict per (release, suite, arch) with a derived tarball name."""
-    suffixes = defaults.get("suite_suffix") or {}
     component = defaults["component"]
     origin = defaults["origin"]
     seen = set()
@@ -121,9 +120,8 @@ def units(defaults, sources, releases):
         suites = resolve_list(rel, source_cfg, defaults, "suites", idx)
         arches = resolve_list(rel, source_cfg, defaults, "architectures", idx)
         for suite in suites:
-            suffix = suffixes.get(suite, "")
             for arch in arches:
-                tarball = f"{source}_{version}{suffix}_{suite}_{arch}.tar.gz"
+                tarball = f"{source}_{version}_{suite}_{arch}.tar.gz"
                 yield {
                     "source": source,
                     "repo": repo,
