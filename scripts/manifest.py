@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Parse and interpret conf/manifest.yml for the Kurokesu APT archive.
+"""Parse and interpret manifest.yml for the Kurokesu APT archive.
 
 This is the single place that understands the manifest schema and derives asset
 filenames, so the shell scripts (ingest.sh, publish.sh) and the CI workflow stay
@@ -26,7 +26,7 @@ except ModuleNotFoundError:
     sys.exit("manifest.py: PyYAML is required (apt install python3-yaml / pip install pyyaml)")
 
 REPO_ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-DEFAULT_MANIFEST = os.path.join(REPO_ROOT, "conf", "manifest.yml")
+DEFAULT_MANIFEST = os.path.join(REPO_ROOT, "manifest.yml")
 
 
 def die(msg):

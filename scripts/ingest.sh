@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # Download, verify and extract promoted release assets into a per-suite pool of
-# .debs for publish.sh. conf/manifest.yml is the single source of truth.
+# .debs for publish.sh. manifest.yml is the single source of truth.
 #
 # Per release tag: gh download SHA256SUMS(.asc), verify the signature against the
 # shipped keyring, then per asset verify the checksum, extract and assert the .deb

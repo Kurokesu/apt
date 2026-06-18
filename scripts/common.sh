@@ -7,8 +7,7 @@ set -euo pipefail
 
 REPO_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 SCRIPTS_DIR="$REPO_ROOT/scripts"
-CONF_DIR="$REPO_ROOT/conf"
-MANIFEST="$CONF_DIR/manifest.yml"
+MANIFEST="$REPO_ROOT/manifest.yml"
 # shellcheck disable=SC2034  # consumed by sourcing scripts (ingest.sh)
 KEYRING="$REPO_ROOT/keys/kurokesu-archive-keyring.gpg"
 
