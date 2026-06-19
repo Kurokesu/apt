@@ -10,8 +10,9 @@
 # shellcheck source=scripts/common.sh
 . "$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)/common.sh"
 
-require_cmds aptly gpg dpkg dpkg-deb
+require_cmds aptly gpg dpkg dpkg-deb sha256sum
 
+START_TS=$(date +%s)
 SKIP_SIGNING="${SKIP_SIGNING:-0}"
 APTLY_CONFIG="$REPO_ROOT/aptly.conf"
 
@@ -125,9 +126,45 @@ for suite in "${SUITES[@]}"; do
 done
 log "Origin: ${origin} present in all ${#SUITES[@]} suite Release file(s)"
 
-if command -v du >/dev/null; then
-  pool_size=$(du -sh "$PUBLISH_DIR/pool" 2>/dev/null | cut -f1 || echo n/a)
-  log "Published tree: $(du -sh "$PUBLISH_DIR" | cut -f1) (pool: ${pool_size})"
+# Human-facing root: landing page, setup.sh and the public signing key, served at
+# stable URLs for the documented install flow. apt only fetches dists/ and pool/,
+# so anything else at the root is invisible to it.
+[ -f "$KEYRING" ] || die "missing signing keyring $KEYRING (needed to serve the public key)"
+[ -d "$REPO_ROOT/site" ] || die "missing $REPO_ROOT/site (landing page)"
+[ -f "$REPO_ROOT/setup.sh" ] || die "missing $REPO_ROOT/setup.sh (customer bootstrap)"
+cp -a "$REPO_ROOT/site/." "$PUBLISH_DIR/"
+cp "$REPO_ROOT/setup.sh" "$PUBLISH_DIR/setup.sh"
+cp "$KEYRING" "$PUBLISH_DIR/kurokesu-archive-keyring.gpg"
+
+# Stamp the served landing page with the setup.sh checksum users verify against.
+# Validate the digest explicitly: an empty sha would let sed wipe the placeholder
+# and ship a blank checksum, which the placeholder-gone check alone wouldn't catch.
+[ -f "$PUBLISH_DIR/index.html" ] || die "landing page missing at $PUBLISH_DIR/index.html"
+setup_sha=$(sha256sum "$PUBLISH_DIR/setup.sh" | cut -d' ' -f1)
+[[ "$setup_sha" =~ ^[0-9a-f]{64}$ ]] || die "refusing to stamp index.html: bad setup.sh sha256 '${setup_sha}'"
+sed -i "s/__SETUP_SHA256__/$setup_sha/g" "$PUBLISH_DIR/index.html"
+if grep -q '__SETUP_SHA256__' "$PUBLISH_DIR/index.html"; then
+  die "setup.sh checksum placeholder left unsubstituted in index.html"
+fi
+log "Root extras: landing page + setup.sh + kurokesu-archive-keyring.gpg"
+
+# Instrumentation: tree size + run duration, echoed to the job summary so the
+# eventual Pages -> self-host migration trigger is data, not a guess.
+duration=$(( $(date +%s) - START_TS ))
+tree_size=$(du -sh "$PUBLISH_DIR" 2>/dev/null | cut -f1 || echo n/a)
+pool_size=$(du -sh "$PUBLISH_DIR/pool" 2>/dev/null | cut -f1 || echo n/a)
+log "Published tree: ${tree_size} (pool: ${pool_size}) in ${duration}s"
+if [ -n "${GITHUB_STEP_SUMMARY:-}" ]; then
+  {
+    echo "### APT publish"
+    echo
+    echo "| metric | value |"
+    echo "| --- | --- |"
+    echo "| suites | ${SUITES[*]} |"
+    echo "| published tree | ${tree_size} |"
+    echo "| pool | ${pool_size} |"
+    echo "| duration | ${duration}s |"
+  } >> "$GITHUB_STEP_SUMMARY"
 fi
 
 log "Publish complete -> $PUBLISH_DIR"
