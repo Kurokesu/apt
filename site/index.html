@@ -76,7 +76,7 @@ sudo apt install &lt;package&gt;</code></pre>
     <p class="hint">
       Inspect before running. Verify the checksum first:<br>
       <code>echo "__SETUP_SHA256__  setup.sh" | sha256sum -c</code><br>
-      <code>--update</code> refreshes apt for you. Omit it to just enable the repo.
+      <code>--update</code> refreshes apt. Omit it to just enable the repo.
     </p>
 
     <details>
@@ -111,7 +111,7 @@ sudo apt update</code></pre>
       <a href="kurokesu-archive-keyring.gpg">kurokesu-archive-keyring.gpg</a>.
       Verify it matches this fingerprint:
     </p>
-    <p class="fp"><code>AF26 4452 1304 FD7A C47B&nbsp; 5A08 18C2 42F8 D318 DC3F</code></p>
+    <p class="fp"><code>6385 3998 AD71 95E4 3D2D&nbsp; 4E83 3EBA 33E5 B464 4D7A</code></p>
 
     <h2>Remove</h2>
     <pre><code>curl -fsSLO https://apt.kurokesu.com/setup.sh
@@ -119,7 +119,6 @@ sudo sh setup.sh --remove</code></pre>
 
     <footer>
       <a href="https://github.com/Kurokesu">github.com/Kurokesu</a> &middot;
-      <a href="https://github.com/Kurokesu/apt">archive source</a> &middot;
       <a href="https://www.kurokesu.com">kurokesu.com</a>
     </footer>
   </main>

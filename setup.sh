@@ -23,7 +23,7 @@ KEYRING="/etc/apt/keyrings/kurokesu-archive-keyring.gpg"
 SOURCES="/etc/apt/sources.list.d/kurokesu.sources"
 PREFS="/etc/apt/preferences.d/kurokesu.pref"
 # The archive signing key; verify against the fingerprint at https://apt.kurokesu.com/
-EXPECTED_FPR="AF2644521304FD7AC47B5A0818C242F8D318DC3F"
+EXPECTED_FPR="63853998AD7195E43D2D4E833EBA33E5B4644D7A"
 
 msg() { printf '%s\n' "$*"; }
 die() { printf 'setup.sh: error: %s\n' "$*" >&2; exit 1; }
