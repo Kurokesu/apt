@@ -10,7 +10,7 @@
 # shellcheck source=scripts/common.sh
 . "$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)/common.sh"
 
-require_cmds aptly gpg dpkg dpkg-deb sha256sum
+require_cmds aptly gpg dpkg dpkg-deb
 
 START_TS=$(date +%s)
 SKIP_SIGNING="${SKIP_SIGNING:-0}"
@@ -136,16 +136,7 @@ cp -a "$REPO_ROOT/site/." "$PUBLISH_DIR/"
 cp "$REPO_ROOT/setup.sh" "$PUBLISH_DIR/setup.sh"
 cp "$KEYRING" "$PUBLISH_DIR/kurokesu-archive-keyring.gpg"
 
-# Stamp the served landing page with the setup.sh checksum users verify against.
-# Validate the digest explicitly: an empty sha would let sed wipe the placeholder
-# and ship a blank checksum, which the placeholder-gone check alone wouldn't catch.
 [ -f "$PUBLISH_DIR/index.html" ] || die "landing page missing at $PUBLISH_DIR/index.html"
-setup_sha=$(sha256sum "$PUBLISH_DIR/setup.sh" | cut -d' ' -f1)
-[[ "$setup_sha" =~ ^[0-9a-f]{64}$ ]] || die "refusing to stamp index.html: bad setup.sh sha256 '${setup_sha}'"
-sed -i "s/__SETUP_SHA256__/$setup_sha/g" "$PUBLISH_DIR/index.html"
-if grep -q '__SETUP_SHA256__' "$PUBLISH_DIR/index.html"; then
-  die "setup.sh checksum placeholder left unsubstituted in index.html"
-fi
 log "Root extras: landing page + setup.sh + kurokesu-archive-keyring.gpg"
 
 # Instrumentation: tree size + run duration, echoed to the job summary so the
