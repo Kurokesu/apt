@@ -107,6 +107,13 @@ for suite in "${SUITES[@]}"; do
   group_end
 done
 
+# aptly leaves dangling by-hash convenience symlinks (Packages/Release/Contents
+# names) whose targets are written relative to the publish root. apt fetches the
+# real by-hash/<algo>/<hash> files, never these, and a dereferencing tar
+# (upload-pages-artifact) aborts on the broken links. Drop them for a clean,
+# static-servable tree.
+find "$PUBLISH_DIR" -xtype l -delete
+
 # Origin assertion. The customer pin (Pin: release o=Kurokesu, Priority 1001)
 # fails OPEN if Origin is absent or misspelled, so customers drift back to stock.
 # Never deploy a tree missing it.
