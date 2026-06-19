@@ -6,72 +6,122 @@
   <meta name="robots" content="noindex">
   <title>Kurokesu APT Archive</title>
   <style>
-    :root { color-scheme: light; --accent: #ca2031; --ink: #1f2328; }
+    :root { color-scheme: light; --accent: #0042a0; --ink: #1f2328; --muted: #57606a; --line: #d0d7de; }
     * { box-sizing: border-box; }
     body {
       margin: 0;
-      min-height: 100vh;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      padding: 3rem 1.5rem 4rem;
+      font-family: Arial, Helvetica, sans-serif;
       background: #ffffff;
       color: var(--ink);
       line-height: 1.6;
-      padding: 2rem;
     }
-    main {
-      max-width: 40rem;
-      width: 100%;
-    }
-    .logo {
-      width: 260px;
-      max-width: 72%;
-      height: auto;
-      display: block;
-      margin-bottom: 1.25rem;
-    }
-    h1 {
-      font-size: 1.25rem;
-      font-weight: 600;
-      margin: 0 0 0.25rem;
-      color: var(--ink);
-    }
-    .tag {
-      display: inline-block;
-      font-size: 0.75rem;
-      padding: 0.15rem 0.5rem;
-      border: 1px solid var(--accent);
-      border-radius: 999px;
-      color: var(--accent);
-      background: rgba(202, 32, 49, 0.07);
-      margin-bottom: 1.5rem;
+    main { max-width: 44rem; margin: 0 auto; }
+    .logo { width: 240px; max-width: 70%; height: auto; display: block; margin-bottom: 1.5rem; }
+    h1 { font-size: 1.4rem; font-weight: 600; margin: 0 0 0.5rem; }
+    h2 {
+      font-size: 0.78rem;
+      font-weight: 700;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin: 2.5rem 0 0.75rem;
     }
     p { margin: 0 0 1rem; color: #3d444d; }
+    a { color: var(--accent); }
     code {
       font-family: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, "Liberation Mono", monospace;
-      background: #f3f4f6;
-      border: 1px solid #d0d7de;
-      border-radius: 6px;
+      background: #f6f8fa;
+      border: 1px solid var(--line);
+      border-radius: 0;
       padding: 0.1rem 0.4rem;
       font-size: 0.85em;
-      white-space: nowrap;
     }
+    pre {
+      background: #f6f8fa;
+      color: var(--ink);
+      border: 1px solid var(--line);
+      border-radius: 0;
+      padding: 1rem 1.1rem;
+      overflow-x: auto;
+      font-size: 0.8rem;
+      line-height: 1.55;
+    }
+    pre code { background: none; border: 0; padding: 0; font-size: inherit; color: inherit; white-space: pre; }
+    details { margin: 0.5rem 0 0; }
+    summary { cursor: pointer; color: var(--accent); font-size: 0.9rem; }
+    .fp { font-size: 0.85rem; word-break: break-all; }
+    .hint { font-size: 0.82rem; color: var(--muted); }
+    footer {
+      margin-top: 3rem;
+      padding-top: 1.25rem;
+      border-top: 1px solid var(--line);
+      font-size: 0.82rem;
+      color: var(--muted);
+    }
+    footer a { color: var(--accent); }
   </style>
 </head>
 <body>
   <main>
     <img class="logo" src="Full_name_logo.png" alt="Kurokesu">
     <h1>APT Package Archive</h1>
-    <span class="tag">setup in progress</span>
-    <p>
-      Signed Debian/Ubuntu packages for Kurokesu camera software.
+    <p>Signed Debian packages from Kurokesu camera software.</p>
+
+    <h2>Set up</h2>
+    <p>On a 64-bit Raspberry Pi OS (Bookworm or Trixie):</p>
+    <pre><code>curl -fsSLO https://apt.kurokesu.com/setup.sh
+sudo sh setup.sh --update
+sudo apt install &lt;package&gt;</code></pre>
+    <p class="hint">
+      Inspect before running. Verify the checksum first:<br>
+      <code>echo "__SETUP_SHA256__  setup.sh" | sha256sum -c</code><br>
+      <code>--update</code> refreshes apt for you. Omit it to just enable the repo.
     </p>
+
+    <details>
+      <summary>Manual setup (no script)</summary>
+      <pre><code># 1 - signing key
+sudo install -m 0755 -d /etc/apt/keyrings
+sudo curl -fsSL https://apt.kurokesu.com/kurokesu-archive-keyring.gpg \
+  -o /etc/apt/keyrings/kurokesu-archive-keyring.gpg
+
+# 2 - source (set Suites to your release: bookworm or trixie)
+sudo tee /etc/apt/sources.list.d/kurokesu.sources &gt;/dev/null &lt;&lt;'EOF'
+Types: deb
+URIs: https://apt.kurokesu.com
+Suites: trixie
+Components: main
+Architectures: arm64
+Signed-By: /etc/apt/keyrings/kurokesu-archive-keyring.gpg
+EOF
+
+# 3 - prefer Kurokesu builds
+sudo tee /etc/apt/preferences.d/kurokesu.pref &gt;/dev/null &lt;&lt;'EOF'
+Package: *
+Pin: release o=Kurokesu
+Pin-Priority: 1001
+EOF
+
+sudo apt update</code></pre>
+    </details>
+
+    <h2>Signing key</h2>
     <p>
-      Repository is being set up. When it goes live you'll be able to
-      <code>apt install</code> and <code>apt upgrade</code> Kurokesu packages
-      directly from here.
+      <a href="kurokesu-archive-keyring.gpg">kurokesu-archive-keyring.gpg</a>.
+      Verify it matches this fingerprint:
     </p>
+    <p class="fp"><code>AF26 4452 1304 FD7A C47B&nbsp; 5A08 18C2 42F8 D318 DC3F</code></p>
+
+    <h2>Remove</h2>
+    <pre><code>curl -fsSLO https://apt.kurokesu.com/setup.sh
+sudo sh setup.sh --remove</code></pre>
+
+    <footer>
+      <a href="https://github.com/Kurokesu">github.com/Kurokesu</a> &middot;
+      <a href="https://github.com/Kurokesu/apt">archive source</a> &middot;
+      <a href="https://www.kurokesu.com">kurokesu.com</a>
+    </footer>
   </main>
 </body>
 </html>
