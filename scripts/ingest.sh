@@ -89,8 +89,13 @@ while IFS=$'\t' read -r source repo tag version suite arch component origin tarb
         continue ;;
     esac
     dv=$(dpkg-deb -f "$deb" Version)
+    # A fork package's .deb Version carries an epoch (e.g. the 1: on libcamera),
+    # but the manifest version and the asset filename are epoch-free. Strip the
+    # epoch before comparing. A Debian version contains a colon only as the epoch
+    # separator, so a package without an epoch has no colon and is left unchanged.
+    dv_cmp=${dv#*:}
     # trixie matches exactly, a backport build appends ~bpo... to the same base
-    case "$dv" in
+    case "$dv_cmp" in
       "$version"|"$version"~*) : ;;
       *) die "version mismatch in $base: deb '$dv' vs manifest '$version'" ;;
     esac

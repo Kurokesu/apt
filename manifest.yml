@@ -7,10 +7,12 @@
 # Asset filenames are DERIVED, never hand-typed:
 #   <source>_<version>_<suite>_<arch>.tar.gz   (on release <tag>)
 #
-# `version` is the trixie/base Debian version. A bookworm build's .deb is
-# <version>~bpo12+1 internally, but the asset filename omits that suffix (the
-# suite token already disambiguates) and ingest accepts <version> or
-# <version>~*, so the backport build still validates.
+# `version` is the trixie/base Debian version, kept EPOCH-FREE because it derives
+# the (epoch-free) asset filename. A package whose .deb carries an epoch (e.g.
+# libcamera's 1:) still lists the epoch-free version here; ingest strips the epoch
+# from the .deb before validating. A bookworm build's .deb is <version>~bpo12+1
+# internally, but the asset filename omits that suffix (the suite token already
+# disambiguates) and ingest accepts <version> or <version>~*, so it still validates.
 #
 # Retention / packaging rebuilds (the source repos publish with `gh release upload
 # --clobber`, so a rebuild replaces a tag's assets):
@@ -37,5 +39,5 @@ sources:
 # source/defaults for that single tag - use this for a cutover, e.g. freeze older
 # tags to [arm64] once a source starts shipping armhf from a later release.
 releases:
-  - { source: libcamera,   tag: v0.7.1+rpt20260429+krks1, version: "0.7.1+rpt20260429+krks1-3", suites: [bookworm, trixie] }
-  - { source: rpicam-apps, tag: v1.12.0+krks1,            version: "1.12.0+krks1-2",            suites: [bookworm, trixie] }
+  - { source: libcamera,   tag: v0.7.1+rpt20260429+krks1, version: "0.7.1+rpt20260429+krks1-4", suites: [bookworm, trixie] }
+  - { source: rpicam-apps, tag: v1.12.0+krks1,            version: "1.12.0+krks1-3",            suites: [bookworm, trixie] }
