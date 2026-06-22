@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+# SPDX-License-Identifier: GPL-3.0-or-later
+# Copyright (C) 2026, UAB Kurokesu
 """Parse and interpret manifest.yml for the Kurokesu APT archive.
 
 This is the single place that understands the manifest schema and derives asset

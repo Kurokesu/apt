@@ -1,3 +1,6 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+# Copyright (C) 2026, UAB Kurokesu
+#
 # Shared helpers for the Kurokesu APT archive scripts.
 # Source this from ingest.sh / publish.sh: . "$(dirname "$0")/common.sh"
 # Not executable on its own.

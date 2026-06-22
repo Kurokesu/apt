@@ -1,4 +1,7 @@
 #!/usr/bin/env bash
+# SPDX-License-Identifier: GPL-3.0-or-later
+# Copyright (C) 2026, UAB Kurokesu
+#
 # Build a signed, per-suite apt index from the ingested .debs and assemble the
 # publish tree (dists/ + pool/) that becomes the Pages artifact. Stateless: the
 # aptly DB and publish dir are rebuilt from scratch every run.

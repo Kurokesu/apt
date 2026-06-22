@@ -1,4 +1,7 @@
 #!/usr/bin/env bash
+# SPDX-License-Identifier: GPL-3.0-or-later
+# Copyright (C) 2026, UAB Kurokesu
+#
 # Download, verify and extract promoted release assets into a per-suite pool of
 # .debs for publish.sh. manifest.yml is the single source of truth.
 #
