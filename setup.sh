@@ -1,18 +1,11 @@
 #!/bin/sh
+# SPDX-License-Identifier: GPL-3.0-or-later
+# Copyright (C) 2026, UAB Kurokesu
+#
 # Kurokesu APT archive setup.
 #
-# Enables the repository only: installs the signing key, writes the deb822
-# source and the o=Kurokesu priority pin. It deliberately does NOT run
-# `apt update` or install packages - a global apt update refreshes every
-# configured repo and is a network side effect - it prints the next commands
-# instead (pass --update to opt in to a refresh).
-#
-# Usage:
-#   sudo sh setup.sh                  enable the repository
-#   sudo sh setup.sh --update         enable, then refresh apt
-#   sudo sh setup.sh --codename NAME  force the suite (bookworm|trixie)
-#   sudo sh setup.sh --remove         remove the source, pin and key
-#   sh setup.sh --help
+# Enables Kurokesu apt repository: installs the signing key and writes the
+# deb822 source.
 #
 # Re-run after an OS dist-upgrade to refresh the suite in the source list.
 set -eu
@@ -21,7 +14,6 @@ ARCHIVE_URL="https://apt.kurokesu.com"
 KEY_URL="${ARCHIVE_URL}/kurokesu-archive-keyring.gpg"
 KEYRING="/etc/apt/keyrings/kurokesu-archive-keyring.gpg"
 SOURCES="/etc/apt/sources.list.d/kurokesu.sources"
-PREFS="/etc/apt/preferences.d/kurokesu.pref"
 # The archive signing key. Verify against the fingerprint at https://apt.kurokesu.com/
 EXPECTED_FPR="63853998AD7195E43D2D4E833EBA33E5B4644D7A"
 
@@ -31,10 +23,10 @@ die() { printf 'setup.sh: error: %s\n' "$*" >&2; exit 1; }
 usage() {
   cat <<'USAGE'
 Kurokesu APT archive setup
-  sudo sh setup.sh                  enable the repository
+  sudo sh setup.sh                  enable Kurokesu apt repository
   sudo sh setup.sh --update         enable, then refresh apt
   sudo sh setup.sh --codename NAME  force the suite (bookworm|trixie)
-  sudo sh setup.sh --remove         remove the source, pin and key
+  sudo sh setup.sh --remove         remove the source and key
 USAGE
 }
 
@@ -69,8 +61,8 @@ done
 
 if [ "$mode" = remove ]; then
   require_root
-  rm -f "$SOURCES" "$PREFS" "$KEYRING"
-  msg "Removed the Kurokesu source, pin and key."
+  rm -f "$SOURCES" "$KEYRING"
+  msg "Removed the Kurokesu source and key."
   msg "Run 'sudo apt update' to refresh apt's lists."
   exit 0
 fi
@@ -118,18 +110,10 @@ Signed-By: ${KEYRING}
 EOF
 chmod 0644 "$SOURCES"
 
-# 3. pin: our origin wins for Kurokesu packages.
-cat > "$PREFS" <<EOF
-Package: *
-Pin: release o=Kurokesu
-Pin-Priority: 1001
-EOF
-chmod 0644 "$PREFS"
-
 msg "Kurokesu archive enabled for ${codename} (arm64)."
 
 # Echo the installed key fingerprint and check it against the expected one.
-# gpg is optional (apt verifies via gpgv); run it in a throwaway home so it
+# gpg is optional (apt verifies via gpgv). Run it in a throwaway home so it
 # never creates /root/.gnupg as a side effect.
 if command -v gpg >/dev/null 2>&1; then
   gpgtmp=$(mktemp -d)

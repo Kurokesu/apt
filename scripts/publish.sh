@@ -118,17 +118,6 @@ done
 # static-servable tree.
 find "$PUBLISH_DIR" -xtype l -delete
 
-# Origin assertion. The customer pin (Pin: release o=Kurokesu, Priority 1001)
-# fails OPEN if Origin is absent or misspelled, so customers drift back to stock.
-# Never deploy a tree missing it.
-for suite in "${SUITES[@]}"; do
-  rel="$PUBLISH_DIR/dists/$suite/Release"
-  [ -f "$rel" ] || die "missing $rel after publish"
-  grep -q "^Origin: ${origin}\$" "$rel" \
-    || die "Origin: ${origin} missing in dists/$suite/Release (customer pin would fail open)"
-done
-log "Origin: ${origin} present in all ${#SUITES[@]} suite Release file(s)"
-
 # Human-facing root: landing page, setup.sh and the public signing key, served at
 # stable URLs for the documented install flow. apt only fetches dists/ and pool/,
 # so anything else at the root is invisible to it.

@@ -95,13 +95,6 @@ Architectures: arm64
 Signed-By: /etc/apt/keyrings/kurokesu-archive-keyring.gpg
 EOF
 
-# 3 - prefer Kurokesu builds
-sudo tee /etc/apt/preferences.d/kurokesu.pref &gt;/dev/null &lt;&lt;'EOF'
-Package: *
-Pin: release o=Kurokesu
-Pin-Priority: 1001
-EOF
-
 sudo apt update</code></pre>
     </details>
 
