@@ -9,5 +9,8 @@
 /SHA256SUMS
 /SHA256SUMS.asc
 
+# Python bytecode from running the manifest helper locally
+__pycache__/
+
 # Local-only dev overrides
 *.local

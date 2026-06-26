@@ -1,0 +1,52 @@
+# PR preflight: validate manifest and lint scripts so a broken edit
+# is caught before the manual publish workflow runs.
+name: CI
+
+on:
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    name: validate
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+        with:
+          persist-credentials: false
+
+      # shellcheck is preinstalled on ubuntu-latest. checkbashisms ships in
+      # devscripts. python3-yaml backs manifest.py's PyYAML import.
+      - name: Install tooling
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y --no-install-recommends devscripts python3-yaml
+
+      - name: Validate manifest
+        run: python3 scripts/manifest.py validate
+
+      - name: Byte-compile manifest.py
+        run: python3 -m py_compile scripts/manifest.py
+
+      # common.sh has no shebang. It is sourced by the bash scripts, so lint
+      # it as bash alongside them.
+      - name: Shellcheck (bash)
+        run: shellcheck -s bash scripts/publish.sh scripts/ingest.sh scripts/common.sh
+
+      # setup.sh runs under /bin/sh (dash) on Raspberry Pi OS, so it must stay
+      # free of bashisms. Check it in sh mode and with checkbashisms.
+      - name: Shellcheck + checkbashisms (sh)
+        run: |
+          shellcheck -s sh setup.sh
+          checkbashisms setup.sh
+
+      # bash -n only checks its first path argument, so check each separately.
+      - name: Syntax check
+        run: |
+          for f in scripts/publish.sh scripts/ingest.sh scripts/common.sh; do
+            bash -n "$f"
+          done
