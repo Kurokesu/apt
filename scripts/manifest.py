@@ -90,6 +90,8 @@ def load(path):
             require_str_list(cfg["architectures"], f"sources.{name}.architectures")
         if "suites" in cfg:
             require_str_list(cfg["suites"], f"sources.{name}.suites")
+        if "tarball" in cfg and cfg["tarball"] not in ("suite-arch", "single"):
+            die(f"sources.{name}.tarball must be 'suite-arch' or 'single'")
 
     if not isinstance(releases, list) or not releases:
         die("releases must be a non-empty list")
@@ -119,11 +121,19 @@ def units(defaults, sources, releases):
             die(f"duplicate release {source} '{tag}' - edit the existing block in place, do not append")
         seen.add((source, tag))
         version = rel["version"]
+        # The archive serves only stable suites, so refuse tilde
+        # pre-release versions until an experimental suite exists.
+        if "~" in version:
+            die(f"releases[{idx}].version '{version}' is a pre-release (~), not publishable to stable suites")
+        single = source_cfg.get("tarball") == "single"
         suites = resolve_list(rel, source_cfg, defaults, "suites", idx)
         arches = resolve_list(rel, source_cfg, defaults, "architectures", idx)
         for suite in suites:
             for arch in arches:
-                tarball = f"{source}_{version}_{suite}_{arch}.tar.gz"
+                if single:
+                    tarball = f"{source}_{version}.tar.gz"
+                else:
+                    tarball = f"{source}_{version}_{suite}_{arch}.tar.gz"
                 yield {
                     "source": source,
                     "repo": repo,

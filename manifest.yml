@@ -6,6 +6,8 @@
 #
 # Asset filenames are DERIVED, never hand-typed:
 #   <source>_<version>_<suite>_<arch>.tar.gz   (on release <tag>)
+# A source with `tarball: single` ships one suite-independent tarball instead
+# (arch:all packages, e.g. DKMS): <source>_<version>.tar.gz
 #
 # `version` is the trixie/base Debian version, kept EPOCH-FREE because it derives
 # the (epoch-free) asset filename. A package whose .deb carries an epoch (e.g.
@@ -31,13 +33,17 @@ defaults:
 # `repo` is required per source. `architectures` and `suites` are optional and
 # describe that repo's build matrix (e.g. a source that never ships armhf, or only
 # builds trixie). Resolution precedence for both is: release block > source > defaults.
+# `tarball` (suite-arch, the default, or single) is source-only - the shape is a
+# property of how that repo releases, so it has no release-level override.
 sources:
-  libcamera:   { repo: Kurokesu/libcamera }
-  rpicam-apps: { repo: Kurokesu/rpicam-apps }
+  libcamera:       { repo: Kurokesu/libcamera }
+  rpicam-apps:     { repo: Kurokesu/rpicam-apps }
+  ar0822-rpi-dkms: { repo: Kurokesu/ar0822-rpi-driver, tarball: single }
 
 # One block per distinct source tag. `suites` / `architectures` may override the
 # source/defaults for that single tag - use this for a cutover, e.g. freeze older
 # tags to [arm64] once a source starts shipping armhf from a later release.
 releases:
-  - { source: libcamera,   tag: v0.7.1+rpt20260429+krks1, version: "0.7.1+rpt20260429+krks1-4", suites: [bookworm, trixie] }
-  - { source: rpicam-apps, tag: v1.12.0+krks1,            version: "1.12.0+krks1-3",            suites: [bookworm, trixie] }
+  - { source: libcamera,       tag: v0.7.1+rpt20260429+krks1, version: "0.7.1+rpt20260429+krks1-4", suites: [bookworm, trixie] }
+  - { source: rpicam-apps,     tag: v1.12.0+krks1,            version: "1.12.0+krks1-3",            suites: [bookworm, trixie] }
+  - { source: ar0822-rpi-dkms, tag: v0.1.0,                   version: "0.1.0-1" }
