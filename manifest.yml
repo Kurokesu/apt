@@ -33,6 +33,8 @@ defaults:
 # `repo` is required per source. `architectures` and `suites` are optional and
 # describe that repo's build matrix (e.g. a source that never ships armhf, or only
 # builds trixie). Resolution precedence for both is: release block > source > defaults.
+# `tarball` (suite-arch, the default, or single) is source-only - the shape is a
+# property of how that repo releases, so it has no release-level override.
 sources:
   libcamera:       { repo: Kurokesu/libcamera }
   rpicam-apps:     { repo: Kurokesu/rpicam-apps }
