@@ -1,0 +1,43 @@
+Package: ar0822-rpi-dkms
+Version: 0.1.0-1
+Architecture: all
+Maintainer: Kurokesu <support@kurokesu.com>
+Installed-Size: 128
+Depends: dkms (>= 2.1.0.0)
+Homepage: https://github.com/Kurokesu/ar0822-rpi-driver
+Priority: optional
+Section: kernel
+Filename: pool/main/a/ar0822-rpi-dkms/ar0822-rpi-dkms_0.1.0-1_all.deb
+Size: 18672
+Description: Onsemi AR0822 camera driver for Raspberry Pi (DKMS)
+ DKMS source for the ar0822 V4L2 sensor driver and its device tree
+ overlay, rebuilt automatically against installed kernels.
+
+Package: libcamera0.7
+Source: libcamera
+Version: 1:0.7.1+rpt20260429+krks1-4~bpo12+1
+Architecture: arm64
+Maintainer: Kurokesu <support@kurokesu.com>
+Installed-Size: 2048
+Depends: libc6 (>= 2.34)
+Homepage: https://github.com/Kurokesu/libcamera
+Priority: optional
+Section: libs
+Filename: pool/main/libc/libcamera/libcamera0.7_0.7.1+rpt20260429+krks1-4~bpo12+1_arm64.deb
+Size: 1048576
+Description: complex camera support library (Kurokesu build)
+ Fork of Raspberry Pi's libcamera with Kurokesu sensor support.
+
+Package: rpicam-apps
+Version: 1.11.0+krks1-2~bpo12+1
+Architecture: arm64
+Maintainer: Kurokesu <support@kurokesu.com>
+Installed-Size: 4096
+Depends: libc6 (>= 2.34)
+Homepage: https://github.com/Kurokesu/rpicam-apps
+Priority: optional
+Section: video
+Filename: pool/main/r/rpicam-apps/rpicam-apps_1.11.0+krks1-2~bpo12+1_arm64.deb
+Size: 2097152
+Description: libcamera-based camera applications (Kurokesu build)
+ Command line camera applications built on libcamera.

@@ -131,6 +131,11 @@ cp "$KEYRING" "$PUBLISH_DIR/kurokesu-archive-keyring.gpg"
 [ -f "$PUBLISH_DIR/index.html" ] || die "landing page missing at $PUBLISH_DIR/index.html"
 log "Root extras: landing page + setup.sh + kurokesu-archive-keyring.gpg"
 
+# Package table from the published indexes, so the page cannot drift from
+# what the archive serves. Missing markers fail the publish.
+python3 "$SCRIPTS_DIR/render-packages.py" \
+  --publish-dir "$PUBLISH_DIR" --component "$component" --suites "${SUITES[*]}"
+
 # Instrumentation: tree size + run duration, echoed to the job summary so the
 # eventual Pages -> self-host migration trigger is data, not a guess.
 duration=$(( $(date +%s) - START_TS ))

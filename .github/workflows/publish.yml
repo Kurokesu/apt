@@ -8,6 +8,9 @@
 # Manual only: promote the source releases off pre-release first, then run this
 # from the Actions tab. ingest skips pre-release tags, so a run before promotion
 # ingests nothing and fails closed rather than publishing a half-empty archive.
+#
+# badge.yml references this workflow by the display name below. Rename them
+# together or the archive badge freezes.
 name: Publish APT archive
 
 on:

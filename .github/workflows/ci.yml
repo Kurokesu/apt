@@ -1,9 +1,12 @@
-# PR preflight: validate manifest and lint scripts so a broken edit
-# is caught before the manual publish workflow runs.
+# Validate manifest and lint scripts. Runs as PR preflight so a broken edit
+# is caught before the manual publish workflow, and on pushes to main so the
+# README badge tracks the merged state.
 name: CI
 
 on:
   pull_request:
+    branches: [main]
+  push:
     branches: [main]
   workflow_dispatch:
 
@@ -29,13 +32,16 @@ jobs:
       - name: Validate manifest
         run: python3 scripts/manifest.py validate
 
-      - name: Byte-compile manifest.py
-        run: python3 -m py_compile scripts/manifest.py
+      - name: Byte-compile python scripts
+        run: python3 -m py_compile scripts/manifest.py scripts/render-packages.py
+
+      - name: Renderer dry run
+        run: tests/render-packages-test.sh
 
       # common.sh has no shebang. It is sourced by the bash scripts, so lint
       # it as bash alongside them.
       - name: Shellcheck (bash)
-        run: shellcheck -s bash scripts/publish.sh scripts/ingest.sh scripts/common.sh
+        run: shellcheck -s bash scripts/publish.sh scripts/ingest.sh scripts/common.sh tests/render-packages-test.sh
 
       # setup.sh runs under /bin/sh (dash) on Raspberry Pi OS, so it must stay
       # free of bashisms. Check it in sh mode and with checkbashisms.
@@ -47,6 +53,6 @@ jobs:
       # bash -n only checks its first path argument, so check each separately.
       - name: Syntax check
         run: |
-          for f in scripts/publish.sh scripts/ingest.sh scripts/common.sh; do
+          for f in scripts/publish.sh scripts/ingest.sh scripts/common.sh tests/render-packages-test.sh; do
             bash -n "$f"
           done
