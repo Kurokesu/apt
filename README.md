@@ -1,5 +1,7 @@
 # apt
 
+[![CI](https://github.com/Kurokesu/apt/actions/workflows/ci.yml/badge.svg)](https://github.com/Kurokesu/apt/actions/workflows/ci.yml)
+
 Kurokesu APT package archive: signed Debian/Ubuntu packages for Kurokesu camera software.
 
 This repository builds and serves an `apt` archive (via GitHub Pages) from GitHub Releases of Kurokesu source repositories.
