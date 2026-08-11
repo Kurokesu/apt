@@ -48,6 +48,7 @@ sources:
 # tags to [arm64] once a source starts shipping armhf from a later release.
 releases:
   - { source: camlab-rpi,      tag: v1.0.0,                   version: "1.0.0-1" }
+  - { source: camlab-rpi,      tag: v1.0.1,                   version: "1.0.1-1" }
   - { source: libcamera,       tag: v0.7.1+rpt20260429+krks1, version: "0.7.1+rpt20260429+krks1-4", suites: [bookworm, trixie] }
   - { source: rpicam-apps,     tag: v1.12.0+krks1,            version: "1.12.0+krks1-3",            suites: [bookworm, trixie] }
   - { source: ar0234-rpi-dkms, tag: v0.1.0,                   version: "0.1.0-1" }
