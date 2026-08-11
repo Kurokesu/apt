@@ -10,7 +10,7 @@ free of hardcoded suites, architectures or filename conventions.
 Subcommands:
   plan          TSV of ingest/publish units, one row per (release, suite, arch):
                 source  repo  tag  version  suite  arch  component  origin  tarball
-  suites        space-separated unique suites referenced by releases
+  suites        space-separated suites referenced by releases, oldest first
   architectures space-separated architectures, union across units
                 (restrict to one suite with --suite)
   origin        defaults.origin
@@ -129,6 +129,8 @@ def units(defaults, sources, releases):
         suites = resolve_list(rel, source_cfg, defaults, "suites", idx)
         arches = resolve_list(rel, source_cfg, defaults, "architectures", idx)
         for suite in suites:
+            if suite not in defaults["suites"]:
+                die(f"releases[{idx}] '{source}' uses suite '{suite}', missing from defaults.suites")
             for arch in arches:
                 if single:
                     tarball = f"{source}_{version}.tar.gz"
@@ -164,7 +166,8 @@ def main():
         for row in rows:
             print("\t".join(row[c] for c in cols))
     elif args.command == "suites":
-        print(" ".join(dict.fromkeys(r["suite"] for r in rows)))
+        used = {r["suite"] for r in rows}
+        print(" ".join(dict.fromkeys(s for s in defaults["suites"] if s in used)))
     elif args.command == "architectures":
         if args.suite is None:
             arch_rows = rows
