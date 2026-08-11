@@ -4,8 +4,8 @@
 #
 # Dry-run render-packages.py against fixture indexes in the shape aptly
 # publishes, hashes cut. They cover an arch:all DKMS package, a suite-arch
-# package with an epoch and a ~bpo suffix on bookworm and a package whose
-# suites serve different versions.
+# package with an epoch and a ~bpo suffix on bookworm, a package whose suites
+# serve different versions and a suite retaining two releases of one package.
 
 set -euo pipefail
 
@@ -28,6 +28,12 @@ grep -q '>v0.1.0<' "$TMP/index.html"
 grep -q '>v0.7.1+rpt20260429+krks1<' "$TMP/index.html"
 # Diverging suites annotate the lagging one.
 grep -q '>v1.12.0+krks1 · bookworm still v1.11.0+krks1<' "$TMP/index.html"
+# Retained releases: newest headlines, though the index lists it first.
+grep -q '>v1.0.1<' "$TMP/index.html"
+if grep -q '>v1.0.0<' "$TMP/index.html"; then
+  echo "FAIL: retained older release headlines the entry" >&2
+  exit 1
+fi
 # Hover keeps the exact served Debian versions, epoch and ~bpo included.
 grep -q 'title="bookworm: 1:0.7.1+rpt20260429+krks1-4~bpo12+1, trixie: 1:0.7.1+rpt20260429+krks1-4"' "$TMP/index.html"
 # The footer year is stamped at render time.
