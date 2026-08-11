@@ -15,6 +15,7 @@ Usage:
 
 import argparse
 import html
+import subprocess
 import sys
 from datetime import datetime, timezone
 from pathlib import Path
@@ -32,6 +33,11 @@ def splice(text, name, content, page):
     before, _, rest = text.partition(begin)
     _, _, after = rest.partition(end)
     return before + begin + content + end + after
+
+
+def newer(version, than):
+    """dpkg ordering, so a suite serving several versions headlines the highest."""
+    return subprocess.call(["dpkg", "--compare-versions", version, "gt", than]) == 0
 
 
 def parse_packages(path):
@@ -69,10 +75,16 @@ def collect(publish_dir, component, suites):
                 name = stanza.get("Package")
                 if not name:
                     die(f"stanza without a Package field in {index}")
+                version = stanza.get("Version")
+                if not version:
+                    die(f"{name} stanza without a Version field in {index}")
                 entry = packages.setdefault(
                     name, {"description": "", "homepage": "", "versions": {}}
                 )
-                entry["versions"][suite] = stanza.get("Version", "?")
+                served = entry["versions"].get(suite)
+                if served and not newer(version, served):
+                    continue
+                entry["versions"][suite] = version
                 entry["description"] = stanza.get("Description", "").splitlines()[0]
                 entry["homepage"] = stanza.get("Homepage", "")
     if not packages:

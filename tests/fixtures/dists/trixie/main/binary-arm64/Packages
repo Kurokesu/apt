@@ -41,3 +41,29 @@ Filename: pool/main/r/rpicam-apps/rpicam-apps_1.12.0+krks1-3_arm64.deb
 Size: 2097152
 Description: libcamera-based camera applications (Kurokesu build)
  Command line camera applications built on libcamera.
+
+Package: camlab-rpi
+Version: 1.0.1-1
+Architecture: all
+Maintainer: Kurokesu <support@kurokesu.com>
+Installed-Size: 893
+Homepage: https://github.com/Kurokesu/camlab-rpi
+Priority: optional
+Section: video
+Filename: pool/main/c/camlab-rpi/camlab-rpi_1.0.1-1_all.deb
+Size: 180088
+Description: Kurokesu camera test bench tool for Raspberry Pi
+ Bench GUI for validating Kurokesu Raspberry Pi camera modules.
+
+Package: camlab-rpi
+Version: 1.0.0-1
+Architecture: all
+Maintainer: Kurokesu <support@kurokesu.com>
+Installed-Size: 893
+Homepage: https://github.com/Kurokesu/camlab-rpi
+Priority: optional
+Section: video
+Filename: pool/main/c/camlab-rpi/camlab-rpi_1.0.0-1_all.deb
+Size: 179848
+Description: Kurokesu camera test bench tool for Raspberry Pi
+ Bench GUI for validating Kurokesu Raspberry Pi camera modules.
