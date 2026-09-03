@@ -30,7 +30,7 @@ concurrency:
   cancel-in-progress: false
 
 jobs:
-  badge:
+  archive-state:
     runs-on: ubuntu-latest
     steps:
       # Sticky red: a failed publish is more actionable than staleness.
