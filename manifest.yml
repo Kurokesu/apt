@@ -42,6 +42,7 @@ sources:
   ar0234-rpi-dkms: { repo: Kurokesu/ar0234-rpi-driver, tarball: single }
   ar0822-rpi-dkms: { repo: Kurokesu/ar0822-rpi-driver, tarball: single }
   imx585-rpi-dkms: { repo: Kurokesu/imx585-rpi-driver, tarball: single }
+  os08e10-rpi-dkms: { repo: Kurokesu/os08e10-rpi-driver, tarball: single }
 
 # One block per distinct source tag. `suites` / `architectures` may override the
 # source/defaults for that single tag - use this for a cutover, e.g. freeze older
@@ -53,8 +54,9 @@ releases:
   - { source: libcamera,       tag: v0.7.1+rpt20260429+krks1, version: "0.7.1+rpt20260429+krks1-4", suites: [bookworm, trixie] }
   - { source: libcamera,       tag: v0.7.2+rpt20260817+krks2, version: "0.7.2+rpt20260817+krks2-1", suites: [bookworm, trixie] }
   - { source: libcamera,       tag: v0.7.2+rpt20260817+krks3, version: "0.7.2+rpt20260817+krks3-1", suites: [bookworm, trixie] }
+  - { source: libcamera,       tag: v0.7.2+rpt20260817+krks4, version: "0.7.2+rpt20260817+krks4-1", suites: [bookworm, trixie] }
   - { source: rpicam-apps,     tag: v1.12.0+krks1,            version: "1.12.0+krks1-3",            suites: [bookworm, trixie] }
-  - { source: rpicam-apps,     tag: v1.13.0+krks1,            version: "1.13.0+krks1-3",            suites: [bookworm, trixie] }
+  - { source: rpicam-apps,     tag: v1.13.0+krks1,            version: "1.13.0+krks1-4",            suites: [bookworm, trixie] }
   - { source: ar0234-rpi-dkms, tag: v0.1.0,                   version: "0.1.0-1" }
   - { source: ar0234-rpi-dkms, tag: v0.1.1,                   version: "0.1.1-1" }
   - { source: ar0234-rpi-dkms, tag: v0.1.2,                   version: "0.1.2-1" }
@@ -64,3 +66,4 @@ releases:
   - { source: imx585-rpi-dkms, tag: v0.1.0,                   version: "0.1.0-1" }
   - { source: imx585-rpi-dkms, tag: v0.2.0,                   version: "0.2.0-1" }
   - { source: imx585-rpi-dkms, tag: v0.2.1,                   version: "0.2.1-1" }
+  - { source: os08e10-rpi-dkms, tag: v0.1.0,                  version: "0.1.0-1" }
