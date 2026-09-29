@@ -51,6 +51,7 @@ releases:
   - { source: camlab-rpi,      tag: v1.0.0,                   version: "1.0.0-1" }
   - { source: camlab-rpi,      tag: v1.0.1,                   version: "1.0.1-1" }
   - { source: camlab-rpi,      tag: v1.1.0,                   version: "1.1.0-1" }
+  - { source: camlab-rpi,      tag: v1.2.0,                   version: "1.2.0-1" }
   - { source: libcamera,       tag: v0.7.1+rpt20260429+krks1, version: "0.7.1+rpt20260429+krks1-4", suites: [bookworm, trixie] }
   - { source: libcamera,       tag: v0.7.2+rpt20260817+krks2, version: "0.7.2+rpt20260817+krks2-1", suites: [bookworm, trixie] }
   - { source: libcamera,       tag: v0.7.2+rpt20260817+krks3, version: "0.7.2+rpt20260817+krks3-1", suites: [bookworm, trixie] }
