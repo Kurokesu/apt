@@ -31,7 +31,7 @@ concurrency:
 
 jobs:
   archive-state:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     steps:
       # Sticky red: a failed publish is more actionable than staleness.
       - name: Compute badge state

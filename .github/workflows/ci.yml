@@ -16,13 +16,13 @@ permissions:
 jobs:
   validate:
     name: validate
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
         with:
           persist-credentials: false
 
-      # shellcheck is preinstalled on ubuntu-latest. checkbashisms ships in
+      # shellcheck is preinstalled on ubuntu-24.04. checkbashisms ships in
       # devscripts. python3-yaml backs manifest.py's PyYAML import.
       - name: Install tooling
         run: |
