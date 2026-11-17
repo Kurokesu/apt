@@ -73,6 +73,7 @@ releases:
   - { source: ar0822-rpi-dkms, tag: v0.1.0,                   version: "0.1.0-1" }
   - { source: ar0822-rpi-dkms, tag: v0.1.1,                   version: "0.1.1-1" }
   - { source: ar0822-rpi-dkms, tag: v0.1.2,                   version: "0.1.2-1" }
+  - { source: ar0822-rpi-dkms, tag: v0.2.0,                   version: "0.2.0-1" }
   - { source: imx477-rpi-dkms, tag: v1.0.0,                   version: "1.0.0-1" }
   - { source: imx585-rpi-dkms, tag: v0.1.0,                   version: "0.1.0-1" }
   - { source: imx585-rpi-dkms, tag: v0.2.0,                   version: "0.2.0-1" }
